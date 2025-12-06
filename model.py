@@ -21,7 +21,7 @@ import wandb
 import pprint
 import torchvision
 
-import SAFF
+import SAC
 
 import vmamba
 import decoder
@@ -216,7 +216,7 @@ class TARORoad(pl.LightningModule):
         )
         
         #### TOPONet
-        self.saff = SAFF.SAFF(encoder_output_dim, r=4)
+        self.sac = SAC.SAC(encoder_output_dim, r=4)
         self.topo_decoder = TopoDecoder(config)
         self.bilinear_sampler = BilinearSampler(config)
         self.topo_net = TopoNet(config, 48)
@@ -294,7 +294,7 @@ class TARORoad(pl.LightningModule):
 
         image_embeddings = self.image_encoder(x)
         # mask_logits, mask_scores: [B, 2, H, W]
-        image_embeddings[3] = self.saff(image_embeddings[3])
+        image_embeddings[3] = self.sac(image_embeddings[3])
         mask_logits = self.map_decoder(image_embeddings[3])
         mask_scores = torch.sigmoid(mask_logits)
         
